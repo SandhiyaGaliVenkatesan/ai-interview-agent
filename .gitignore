@@ -17,3 +17,8 @@ obj/
 # IDE
 .vscode/
 .idea/
+
+# .NET
+**/bin/
+**/obj/
+
