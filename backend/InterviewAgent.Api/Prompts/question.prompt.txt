@@ -1,0 +1,14 @@
+Return ONLY valid JSON. No markdown. No extra text.
+
+Required JSON keys:
+- question (string)
+- difficulty (string)
+- track (string)
+- expectedAnswerOutline (array of 3 to 5 strings)
+
+Inputs:
+track={TRACK}
+difficulty={DIFFICULTY}
+context={CONTEXT}
+
+Return JSON only.

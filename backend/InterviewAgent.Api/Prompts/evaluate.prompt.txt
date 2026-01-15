@@ -1,0 +1,16 @@
+Return ONLY valid JSON. No markdown. No extra text.
+
+Required JSON keys:
+- score (integer 0..10)
+- verdict ("Pass" | "Needs Improvement" | "Fail")
+- strengths (array of exactly 2 strings)
+- improvements (array of exactly 2 strings)
+- modelAnswer (string)
+
+Inputs:
+track={TRACK}
+difficulty={DIFFICULTY}
+questionJson={QUESTION_JSON}
+userAnswer={ANSWER}
+
+Return JSON only.
