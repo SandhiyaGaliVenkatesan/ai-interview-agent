@@ -3,11 +3,12 @@ using InterviewAgent.Api.Services;
 using InterviewAgent.Api.Services.Ai;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using System.Net.Http.Headers;
 
 
 
 var builder = WebApplication.CreateBuilder(args);
-
+Console.WriteLine("OpenRouter key length=" + ((builder.Configuration["Ai:OpenRouter:ApiKey"] ?? "").Length));
 builder.Services.AddControllers();
 // Swagger / OpenAPI
 builder.Services.AddEndpointsApiExplorer();
@@ -37,6 +38,7 @@ builder.Services.AddDbContext<AppDbContext>(opt =>
 // App services
 builder.Services.AddScoped<InterviewService>();
 builder.Services.AddSingleton<PromptLoader>();
+builder.Services.AddTransient<OpenRouterAuthHandler>();
 
 // AI client selection:
 // Start with MockAiClient (works offline). Later switch to OpenAiClient by config.
@@ -48,7 +50,17 @@ if (aiProvider.Equals("OpenAI", StringComparison.OrdinalIgnoreCase))
 }
 else
 {
-    builder.Services.AddScoped<IAiClient, MockAiClient>();
+   // builder.Services.AddHttpClient<IAiClient, OpenRouterAiClient>();
+    // ✅ OpenRouter client wired to IAiClient with correct headers
+
+builder.Services.AddHttpClient<IAiClient, OpenRouterAiClient>(http =>
+{
+    http.BaseAddress = new Uri("https://openrouter.ai/api/v1/");
+    http.Timeout = TimeSpan.FromSeconds(500);
+})
+.AddHttpMessageHandler<OpenRouterAuthHandler>(); 
+//builder.Services.AddScoped<IAiClient, MockAiClient>();
+
 }
 
 var app = builder.Build();

@@ -4,16 +4,17 @@ public class PromptLoader
 {
     public string Load(string promptFileName)
     {
+        // 1) Try project folder first (most reliable in dev)
+        var devPath = Path.Combine(Directory.GetCurrentDirectory(), "Prompts", promptFileName);
+        if (File.Exists(devPath)) return File.ReadAllText(devPath);
+
+        // 2) Try output folder (bin/Debug/.../Prompts)
         var basePath = AppContext.BaseDirectory;
-        var path = Path.Combine(basePath, "Prompts", promptFileName);
+        var outPath = Path.Combine(basePath, "Prompts", promptFileName);
+        if (File.Exists(outPath)) return File.ReadAllText(outPath);
 
-        // In development, prompts may be in project folder. Fallback:
-        if (!File.Exists(path))
-        {
-            var devPath = Path.Combine(Directory.GetCurrentDirectory(), "Prompts", promptFileName);
-            if (File.Exists(devPath)) return File.ReadAllText(devPath);
-        }
-
-        return File.ReadAllText(path);
+        throw new FileNotFoundException(
+            $"Prompt file not found. Looked in:\n{devPath}\n{outPath}",
+            outPath);
     }
 }

@@ -58,6 +58,16 @@ public class SessionsController : ControllerBase
     public async Task<ActionResult<object>> SubmitAnswer(Guid sessionId, int turnNumber, [FromBody] SubmitAnswerRequest req)
     {
         var turn = await _svc.SubmitAnswerAsync(sessionId, turnNumber, req.Answer);
-        return Ok(new { turn.TurnNumber, turn.EvaluationJson });
+        using var doc = JsonDocument.Parse(turn.EvaluationJson ?? "{}");
+        var root = doc.RootElement;
+
+        var dto = new EvaluationDto(
+            root.GetProperty("score").GetInt32(),
+            root.GetProperty("verdict").GetString() ?? "Needs Improvement",
+            root.GetProperty("strengths").EnumerateArray().Select(x => x.GetString() ?? "").ToList(),
+            root.GetProperty("improvements").EnumerateArray().Select(x => x.GetString() ?? "").ToList(),
+            root.GetProperty("modelAnswer").GetString() ?? ""
+        );
+        return Ok(new { turn.TurnNumber, dto });
     }
 }

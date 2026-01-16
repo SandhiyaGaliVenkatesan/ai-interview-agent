@@ -70,35 +70,45 @@ const didRun = useRef(false);
       </div>
 
       <div className="card">
-        <h2>Evaluation</h2>
-        {evaluationJson ? (
-          <>
-            <div className="scores">
-              {Object.entries(evaluationJson.scores ?? {}).map(([k, v]: any) => (
-                <div key={k} className="score">
-                  <div className="scoreKey">{k}</div>
-                  <div className="scoreVal">{v}/5</div>
-                </div>
-              ))}
-            </div>
+  <h2>Evaluation</h2>
 
-            <h3>Feedback</h3>
-            <ul>
-              {(evaluationJson.feedback ?? []).map((f: string, i: number) => (
-                <li key={i}>{f}</li>
-              ))}
-            </ul>
-
-            <h3>Better answer</h3>
-            <p>{evaluationJson.betterAnswer}</p>
-
-            <h3>Follow-up</h3>
-            <p>{evaluationJson.followUpQuestion}</p>
-          </>
-        ) : (
-          <p>Submit an answer to see scoring.</p>
-        )}
+  {evaluationJson ? (
+    <>
+      <div className="scores">
+        <div className="score">
+          <div className="scoreKey">Overall</div>
+          <div className="scoreVal">{evaluationJson.score}/10</div>
+        </div>
       </div>
+
+      <h3>Verdict</h3>
+      <p>{evaluationJson.verdict}</p>
+
+      <h3>Feedback</h3>
+      <ul>
+        {[...(evaluationJson.strengths ?? []), ...(evaluationJson.improvements ?? [])]
+          .filter(Boolean)
+          .map((f: string, i: number) => (
+            <li key={i}>{f}</li>
+          ))}
+      </ul>
+
+      <h3>Better answer</h3>
+      <pre style={{ whiteSpace: "pre-wrap" }}>
+        {evaluationJson.modelAnswer}
+      </pre>
+
+      <h3>Follow-up</h3>
+      <p>
+        {evaluationJson.improvements?.[0]
+          ? `Can you improve your answer by addressing: ${evaluationJson.improvements[0]}?`
+          : "Add a concrete example and explain tradeoffs."}
+      </p>
+    </>
+  ) : (
+    <p>Submit an answer to see scoring.</p>
+  )}
+</div>
     </div>
   );
 }

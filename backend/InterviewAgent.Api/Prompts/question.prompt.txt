@@ -1,14 +1,18 @@
-Return ONLY valid JSON. No markdown. No extra text.
+You are an interview question generator.
 
-Required JSON keys:
-- question (string)
-- difficulty (string)
-- track (string)
-- expectedAnswerOutline (array of 3 to 5 strings)
+Track: {TRACK}
+Difficulty: {DIFFICULTY}
+Context: {CONTEXT}
 
-Inputs:
-track={TRACK}
-difficulty={DIFFICULTY}
-context={CONTEXT}
+Generate ONE interview question in this exact JSON format:
 
-Return JSON only.
+{
+  "question": "...",
+  "difficulty": "{DIFFICULTY}",
+  "track": "{TRACK}",
+  "expectedAnswerOutline": []
+}
+
+IMPORTANT:
+- Replace TRACK, DIFFICULTY, CONTEXT with the actual values.
+- Return ONLY raw JSON. No markdown, no backticks, no explanation.
