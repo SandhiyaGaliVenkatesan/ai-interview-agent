@@ -8,7 +8,12 @@ using System.Net.Http.Headers;
 
 
 var builder = WebApplication.CreateBuilder(args);
-Console.WriteLine("OpenRouter key length=" + ((builder.Configuration["Ai:OpenRouter:ApiKey"] ?? "").Length));
+
+var envKey = Environment.GetEnvironmentVariable("OPENRECORDER_API_KEY");
+if (!string.IsNullOrWhiteSpace(envKey))
+{
+    builder.Configuration["Ai:OpenRouter:ApiKey"] = envKey;
+}
 builder.Services.AddControllers();
 // Swagger / OpenAPI
 builder.Services.AddEndpointsApiExplorer();
@@ -51,12 +56,12 @@ if (aiProvider.Equals("OpenAI", StringComparison.OrdinalIgnoreCase))
 else
 {
    // builder.Services.AddHttpClient<IAiClient, OpenRouterAiClient>();
-    // ✅ OpenRouter client wired to IAiClient with correct headers
+    // OpenRouter client wired to IAiClient with correct headers
 
 builder.Services.AddHttpClient<IAiClient, OpenRouterAiClient>(http =>
 {
     http.BaseAddress = new Uri("https://openrouter.ai/api/v1/");
-    http.Timeout = TimeSpan.FromSeconds(500);
+    http.Timeout = TimeSpan.FromSeconds(120);
 })
 .AddHttpMessageHandler<OpenRouterAuthHandler>(); 
 //builder.Services.AddScoped<IAiClient, MockAiClient>();
@@ -64,11 +69,6 @@ builder.Services.AddHttpClient<IAiClient, OpenRouterAiClient>(http =>
 }
 
 var app = builder.Build();
-
-app.Lifetime.ApplicationStopping.Register(() =>
-{
-    Console.WriteLine("Backend shutting down...");
-});
 
 if (app.Environment.IsDevelopment())
 {

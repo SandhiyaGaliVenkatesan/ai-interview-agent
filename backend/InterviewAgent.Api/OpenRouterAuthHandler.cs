@@ -13,14 +13,18 @@ public sealed class OpenRouterAuthHandler : DelegatingHandler
 
     protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {
-        var key = (_config["Ai:OpenRouter:ApiKey"] ?? "").Trim().Trim('"');
-        if (string.IsNullOrWhiteSpace(key))
-            throw new InvalidOperationException("OpenRouter:ApiKey is missing/empty.");
+         var apiKeyRaw = (_config["Ai:OpenRouter:ApiKey"] ?? "");
+
+         var apiKey = new string(apiKeyRaw.Where(c => c <= 127).ToArray())
+            .Trim()
+            .Trim('"');
+        if (string.IsNullOrWhiteSpace(apiKey))
+            throw new InvalidOperationException("Ai:OpenRouter:ApiKey is missing/empty at runtime.");
 
         // Force exact headers (like curl)
-        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", key);
-        request.Headers.TryAddWithoutValidation("HTTP-Referer", _config["OpenRouter:Referer"] ?? "http://localhost:5173");
-        request.Headers.TryAddWithoutValidation("X-Title", _config["OpenRouter:Title"] ?? "AI Interview Agent");
+        request.Headers.Authorization =  new AuthenticationHeaderValue("Bearer", apiKey);
+        request.Headers.TryAddWithoutValidation("HTTP-Referer", "http://localhost");
+        request.Headers.TryAddWithoutValidation("X-Title", "ai-interview-agent");
 
         return base.SendAsync(request, cancellationToken);
     }
