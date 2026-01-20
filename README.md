@@ -1,4 +1,4 @@
-# AI Interview Agent (React + .NET + LLM (i.e. OpenAPI/Gemini))
+# AI Interview Agent (React + .NET + LLM (i.e. OpenAPI/Gemini/OpenRouter))
 
 An AI-powered interview practice app that generates role-based questions and evaluates answers with structured feedback.
 
